@@ -1,69 +1,93 @@
-Mem=[]#I符号+果+概率*可信度
-Bd=3#创新性
-from random import randint
-while True:
-    Out=[]
-    In=input("Usr->_: ")+"\n"
-    for i in range(len(In)):
-        for i2 in range(len(In))[i+1:]:
-            a=False
-            for i3 in range(len(Mem)):
-                if Mem[i3][0]==In[i] and Mem[i3][1]==In[i2]:
-                    a=True
-                    break
-            if a:
-                Mem[i3][2]=Mem[i3][2]+1/(i2-i)
-            else:
-                Mem.append([In[i],In[i2],1/(i2-i)])
-    i=len(Mem)-1
-    while i!=-1:
-        if Mem[i][2]<0.00000000000000000000000000000000000000000000000000000000000000000001:
-            del Mem[i]
-        else:
-            Mem[i][2]=Mem[i][2]/2
-            i=i-1
-    U=[]
-    while True:
-        Next=[]
-        for i in range(len(In)):
-            for i2 in range(len(Mem)):
-                if Mem[i2][0]==In[i]:
+class ZBot:
+    def __init__(self):
+        self.Mem=[[],[]]#事件:因+果+概率,因+[设备+果]+概率
+        #1.GetQue(触发)
+        #2.GetThink(触发)
+        #3.WriteThink
+        #4.WriteQue
+        #5.Asnwer
+        self.Think=""
+        self.Asn=""
+    def Load(self,File:str):
+        with open(File,"rb") as File:
+            File=File.read()
+        #
+    def Save(self,File:str):
+        #
+        with open(File,"wb") as File:
+            File.Write()
+    def Train(self):
+        from random import randint
+        Used=[]
+        Question=input("In_QueStr:>_ ")
+        #Question->Encode->Thinking->Decode->self.Think
+        for i in Question:
+            P=[]
+            for i2 in range(len(self.Mem[0])):
+                if self.Mem[0][i2][0]==i:
                     a=False
-                    for i3 in range(len(Next)):
-                        if Next[i3][0]==Mem[i2][1]:
+                    for i3 in P:
+                        if self.Mem[0][i2][1]==i3[0]:
                             a=True
                             break
                     if a:
-                        Next[i3][1]=Next[i3][1]+abs(len(Out)-i)
+                        P[i3][1]=P[i3][1]+self.Mem[0][i2][2]
                     else:
-                        Next.append([Mem[i2][1],abs(len(Out)-i)])
-        if Bd>len(In):
-            i2=len(In)
+                        P.append(self.Mem[0][i2][1],self.Mem[0][i2][2])
+                    Used.append(i2)
+            Max=[0,""]
+            for i4 in P:
+                if i[0]>Max[0]:
+                    Max=i4
+            self.Think=self.Think+Max[1]
+        print(self.Think)
+        Ma=input("Back(-1,0,1): ")
+        if Ma=="1":
+            for i in Used:
+                if self.Mem[0][i][1] in self.Think:
+                    self.Mem[0][i][2]=self.Mem[0][i][2]+1
+        elif Ma=="-1":
+            for i in Used:
+                if self.Mem[0][i][1] in self.Think:
+                    self.Mem[0][i][2]=self.Mem[0][i][2]-1
+        i=0
+        del Ma
+        Used=[]
+        while i!=len(self.Think):
+            P=[]
+            for i2 in range(len(self.Mem[1])):
+                if self.Mem[0][i2][0]==i:
+                    a=False
+                    for i3 in P:
+                        if self.Mem[0][i2][1]==i3[0]:
+                            a=True
+                            break
+                    if a:
+                        P[i3][1]=P[i3][1]+self.Mem[1][i2][2]
+                    else:
+                        P.append(self.Mem[1][i2][1],self.Mem[1][i2][2])
+                    Used.append(i2)
+            Max=[0,[]]
+            for i4 in P:
+                if i[0]>Max[0]:
+                    Max=i4
+            if Max[1][0]==0:
+                self.Think=self.Think+Max[1][1]
+            elif Max[1][0]==1:
+                self.Asn=self.Asn+Max[1][1]
+            else:
+                print(self.Asn)
+                self.Asn=""
+                return
+        return  
+    def Asnwer(self,Question:str):
+        pass
+    def Guesst(self,Event:str):
+        a=input("模式(0-问题->想法,1-想法->其他): ")
+        inp=input('输入: ')
+        oup=input("输出: ")
+        if a=="0":
+            Mem=self.Mem[0]
         else:
-            i2=Bd
-        N=[]
-        while i2!=0:
-            ma=0
-            for i in Next:
-                if i[1]>ma:
-                    ma=i[1]
-            for i in range(len(Next)):
-                if Next[i][1]==ma:
-                    N.append(Next[i])
-                    break
-            del Next[i]
-            i2=i2-1
-        del Next,i,i2,ma,i3
-        a=N[randint(0,len(N)-1)]
-        U.append(a)
-        a=a[0]
-        if a=="\n":
-            print(''.join(Out))
-            break
-        else:
-            Out.append(a)
-            In=''.join(list(In)+list(a))
-        del a
-    del U,Out,In
+            Mem=self.Mem[1]
         
-                            
